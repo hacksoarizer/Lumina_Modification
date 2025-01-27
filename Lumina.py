@@ -1,4 +1,9 @@
 # the following program is provided by DevMiser - https://github.com/DevMiser
+# this project has been modified to include the following features:
+# 1) Local image generation using Stable Diffusion
+# 2) Local LLM for generating prompts for image generation
+# 3) Random function for generating LLM prompts for subject image generation
+
 
 #!/usr/bin/env python3
 
@@ -232,6 +237,7 @@ def draw_random(category):
     else:
         print("Failed to random generate image or image URL is None.")
 
+#used for LLM description generation for more robust images
 def get_image_description(api_url, api_token, category):
     headers = {
         "Authorization": f"Bearer {api_token}",
