@@ -306,7 +306,7 @@ def display_logo():
     image_window.attributes("-fullscreen", True)
     image_window.overrideredirect(True)
     image_window.configure (bg='black')
-    image = Image.open("/home/hacksoarizer/Lumina/Lumina Logo.png")
+    image = Image.open("~/Lumina/Lumina Logo.png")
     # Calculate the scaling factor based on the original image size and the screen size
     original_width, original_height = image.size
     scale = max(screen_width / original_width, screen_height / original_height)
