@@ -33,11 +33,18 @@ from pvrecorder import PvRecorder
 from time import sleep
 from threading import Thread
 
-pv_access_key= "PICO_VOICE_API_TOKEN_GOES_HERE"
+pv_access_key= "PICO_VOICE_LLM_API_TOKEN_GOES_HERE"
 
 #Local LLM for generating random image descriptions
-api_url = "http://10.0.3.9:3000/api/chat/completions"
-api_token = "LOCAL_STABLE_DIFFUSION_API_TOKEN_GOES_HERE"
+LLM_SERVER_IP = 10.0.3.9
+LLM_SERVER_PORT = 3000
+LLM_LLM_API_URL = f”http://{LLM_SERVER_IP}:{LLM_SERVER_PORT}/api/chat/completions”
+LLM_API_TOKEN = "LOCAL_STABLE_DIFFUSION_LLM_API_TOKEN_GOES_HERE"
+
+
+#Local Stable Diffusion Server IP & Port
+SD_SERVER_IP = "10.0.3.9"
+SD_SERVER_PORT = 7860
 
 audio_stream = None
 cobra = None
@@ -82,21 +89,14 @@ root.update()
 
 def stable_diffusion(prompt):
 
-# no API Token needed for image generation
-    url = "http://10.0.3.9:7860/sdapi/v1/txt2img"  # Update with your Stable Diffusion API URL
+    url = f"http://{SD_SERVER_IP}:{SD_SERVER_PORT}/sdapi/v1/txt2img"  # Update with your Stable Diffusion API URL
     headers = {"Content-Type": "application/json"}
     data = {
         "prompt": prompt,
-#       "negative_prompt": "people, faces, man, woman, kid, children, human",
-#        "width": screen_width // 2,
-#        "height": screen_height // 2,
         "width": screen_width,
         "height": screen_height,
         "steps": 60,
         "seed": -1,
-#
-#	"sampler_name": "UniPC"
-#	"sampler_name": "DPM++ 2M"
     }
 
     try:
@@ -221,7 +221,7 @@ def draw_random(category):
     text_window.update()
 
 
-    random = get_image_description(api_url, api_token, category)
+    random = get_image_description(LLM_API_URL, LLM_API_TOKEN, category)
     print("Generating random image: " + random)
     print("\nCreating random image...\n")
 
@@ -237,10 +237,9 @@ def draw_random(category):
     else:
         print("Failed to random generate image or image URL is None.")
 
-#used for LLM description generation for more robust images
-def get_image_description(api_url, api_token, category):
+def get_image_description(LLM_API_URL, LLM_API_TOKEN, category):
     headers = {
-        "Authorization": f"Bearer {api_token}",
+        "Authorization": f"Bearer {LLM_API_TOKEN}",
         "Content-Type": "application/json"
     }
     data = {
@@ -252,7 +251,7 @@ def get_image_description(api_url, api_token, category):
             }
         ]
     }
-    response = requests.post(api_url, headers=headers, json=data)
+    response = requests.post(LLM_API_URL, headers=headers, json=data)
 
     if response.status_code == 200:
         response_data = response.json()
@@ -306,7 +305,7 @@ def display_logo():
     image_window.attributes("-fullscreen", True)
     image_window.overrideredirect(True)
     image_window.configure (bg='black')
-    image = Image.open("~/Lumina/Lumina Logo.png")
+    image = Image.open("/home/hacksoarizer/Lumina/Lumina Logo.png")
     # Calculate the scaling factor based on the original image size and the screen size
     original_width, original_height = image.size
     scale = max(screen_width / original_width, screen_height / original_height)
